@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FortiBoost | Competitive Training</title>
+<style>
+:root{--bg:#090b0e;--panel:#12161c;--green:#79ff65;--muted:#9aa5b1;--line:#252c35}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#f5f7fa;font-family:Arial,sans-serif}
+header{padding:22px 5%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-size:25px;font-weight:900;letter-spacing:-1px}.logo span{color:var(--green)}
+.pill{color:var(--green);border:1px solid #315b34;padding:7px 12px;border-radius:20px;font-size:12px}
+nav{display:flex;gap:8px;padding:14px 5%;overflow-x:auto;border-bottom:1px solid var(--line)}
+button{cursor:pointer;border:1px solid var(--line);background:#1a2028;color:white;border-radius:9px;padding:11px 14px;font-weight:bold}
+button:hover,button.active{background:var(--green);color:#091009;border-color:var(--green)}
+main{max-width:1100px;margin:auto;padding:26px 5% 60px}
+h1{font-size:clamp(30px,6vw,48px);margin:10px 0}
+h2{font-size:22px;margin-top:30px}
+p{color:var(--muted);line-height:1.5}
+.green{color:var(--green)}.eyebrow{color:var(--green);font-size:12px;font-weight:bold;letter-spacing:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);padding:20px;border-radius:15px}
+.number{font-size:32px;font-weight:900;margin:12px 0}
+.small{font-size:13px;color:var(--muted)}
+.progress{height:7px;background:#2a3038;border-radius:10px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:var(--green);width:0}
+.item{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+.item input{accent-color:var(--green);width:19px;height:19px}
+.item label{flex:1;line-height:1.4}
+input,select,textarea{width:100%;background:#0b0e12;border:1px solid var(--line);color:white;border-radius:8px;padding:12px;margin:6px 0 12px;font:inherit}
+form{max-width:500px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.tag{color:var(--green);font-size:12px}
+.hidden{display:none}
+footer{text-align:center;border-top:1px solid var(--line);padding:25px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">FORTI<span>BOOST</span></div>
+  <div class="pill">● PS5 · MANDO</div>
+</header>
+<nav id="nav">
+  <button class="active" data-page="home">Inicio</button>
+  <button data-page="routine">Rutinas</button>
+  <button data-page="stats">Estadísticas</button>
+  <button data-page="events">Torneos</button>
+  <button data-page="coach">Entrenador IA</button>
+</nav>
+<main>
+<section id="home">
+  <div class="eyebrow">YOUR COMPETITIVE JOURNEY</div>
+  <h1>Entrena mejor.<br><span class="green">Compite más alto.</span></h1>
+  <p>Tu progreso empieza con una sesión. Entrena con intención, registra tus partidas y trabaja tus puntos débiles.</p>
+  <div class="grid">
+    <div class="card"><div class="small">SESIONES COMPLETADAS</div><div class="number" id="sessions">0</div><div class="small">Desde que empiezas a usar FortiBoost</div></div>
+    <div class="card"><div class="small">MINUTOS ENTRENADOS</div><div class="number" id="minutes">0</div><div class="small">Tiempo registrado</div></div>
+    <div class="card"><div class="small">PUNTOS EN TORNEOS</div><div class="number" id="points">0</div><div class="small">Según tus registros</div></div>
+    <div class="card"><div class="small">ELIMINACIONES</div><div class="number" id="kills">0</div><div class="small">Partidas registradas</div></div>
+  </div>
+  <h2>⚡ Tu misión de hoy</h2>
+  <div class="card">
+    <div class="tag">RUTINA RECOMENDADA · 45 MIN</div>
+    <h3>Preparación competitiva</h3>
+    <p>10 min de puntería · 10 min de edición · 10 min de construcción · 15 min de combate o partidas.</p>
+    <button onclick="showPage('routine')">Empezar entrenamiento →</button>
+  </div>
+  <h2>Progreso de la rutina</h2>
+  <div class="card"><div id="progressText">0 de 4 ejercicios</div><div class="progress"><div id="progressBar"></div></div><button onclick="resetRoutine()">Reiniciar rutina</button></div>
+</section>
+
+<section id="routine" class="hidden">
+  <div class="eyebrow">DAILY TRAINING</div><h1>Tu rutina<span class="green">.</span></h1>
+  <p>Completa los ejercicios en orden. Los mapas se pueden abrir dentro de Fortnite usando sus códigos de isla.</p>
+  <div class="card" id="exerciseList"></div>
+  <div class="actions"><button onclick="finishRoutine()">Guardar sesión completada</button><button onclick="resetRoutine()">Reiniciar</button></div>
+  <p id="routineMessage"></p>
+</section>
+
+<section id="stats" class="hidden">
+  <div class="eyebrow">PERFORMANCE TRACKER</div><h1>Tus estadísticas<span class="green">.</span></h1>
+  <div class="grid">
+    <div class="card"><div class="small">PARTIDAS REGISTRADAS</div><div class="number" id="gamesTotal">0</div></div>
+    <div class="card"><div class="small">VICTORIAS</div><div class="number" id="winsTotal">0</div></div>
+    <div class="card"><div class="small">MEDIA DE ELIMINACIONES</div><div class="number" id="avgKills">0</div></div>
+  </div>
+  <h2>Registrar una partida</h2>
+  <form id="matchForm">
+    <label>Modo</label><select id="mode"><option>Ranked Battle Royale</option><option>Ranked Recarga</option><option>Torneo Battle Royale</option><option>Torneo Recarga</option><option>Partida normal</option></select>
+    <label>Eliminaciones</label><input id="matchKills" type="number" min="0" max="99" value="0" required>
+    <label>Puesto final</label><input id="placement" type="number" min="1" max="100" value="10" required>
+    <label>Puntos obtenidos (si los conoces)</label><input id="matchPoints" type="number" min="0" value="0" required>
+    <label>¿Victoria?</label><select id="win"><option value="no">No</option><option value="yes">Sí</option></select>
+    <button type="submit">Guardar partida</button>
+  </form>
+  <h2>Historial</h2><div class="card" id="history">Todavía no has registrado partidas.</div>
+</section>
+
+<section id="events" class="hidden">
+  <div class="eyebrow">COMPETITIVE CENTER</div><h1>Zona de torneos<span class="green">.</span></h1>
+  <p>Organiza tus competiciones. Las fechas que añadas aquí son las que tú introduzcas; esta versión todavía no importa calendarios oficiales automáticamente.</p>
+  <div class="card"><form id="eventForm">
+    <label>Nombre del torneo</label><input id="eventName" placeholder="Ej. Copa de Fortnite" required>
+    <label>Fecha y hora</label><input id="eventDate" type="datetime-local" required>
+    <label>Objetivo de puntos</label><input id="eventGoal" type="number" min="0" value="100">
+    <button type="submit">Añadir torneo</button>
+  </form></div>
+  <h2>Mi calendario</h2><div class="grid" id="eventList"></div>
+  <p class="small">Consulta la programación y las reglas oficiales en Fortnite.com/competitive.</p>
+</section>
+
+<section id="coach" class="hidden">
+  <div class="eyebrow">PERSONAL COACH</div><h1>Entrenador<span class="green"> inteligente.</span></h1>
+  <p>Responde a estas preguntas para obtener recomendaciones adaptadas a tu entrenamiento en PS5 con mando.</p>
+  <div class="card"><form id="coachForm">
+    <label>¿Qué quieres mejorar más?</label><select id="weakness"><option value="aim">Puntería</option><option value="edit">Edición y velocidad</option><option value="build">Construcción y control de piezas</option><option value="game">Rotaciones y decisiones</option><option value="fight">Combates y boxfights</option></select>
+    <label>Tiempo disponible hoy</label><select id="time"><option value="20">20 minutos</option><option value="30">30 minutos</option><option value="45" selected>45 minutos</option><option value="60">60 minutos</option></select>
+    <label>Tu nivel</label><select id="level"><option>Principiante</option><option selected>Intermedio</option><option>Avanzado</option></select>
+    <button type="submit">Generar mi plan</button>
+  </form><div id="advice" aria-live="polite"></div></div>
+</section>
+</main>
+<footer>FORTIBOOST © 2026 · TRAIN SMART. PLAY TO WIN.<br>Herramienta independiente, no afiliada a Epic Games.</footer>
+<script>
+const $=id=>document.getElementById(id);
+const get=(key,def)=>{try{return JSON.parse(localStorage.getItem('fb_'+key))??def}catch{return def}};
+const save=(key,val)=>localStorage.setItem('fb_'+key,JSON.stringify(val));
+let checks=get('checks',[false,false,false,false]);
+let matches=get('matches',[]);
+let events=get('events',[]);
+let sessions=get('sessions',0);
+let minutes=get('minutes',0);
+const exercises=[
+ ['Puntería y tracking','10 min · Practica seguimiento y control del retroceso.'],
+ ['Edición con mando','10 min · Repite ediciones limpias y reinicios sin perder precisión.'],
+ ['Construcción y piezas','10 min · Practica paredes, rampas, conos y control de espacio.'],
+ ['Combate y decisiones','15 min · Juega una partida o practica boxfights analizando cada error.']
+];
+function showPage(page){
+ document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+ $(page).classList.remove('hidden');
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+ window.scrollTo(0,0);
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function renderRoutine(){
+ $('exerciseList').innerHTML=exercises.map((e,i)=>`<div class="item"><input type="checkbox" id="ex${i}" ${checks[i]?'checked':''} onchange="toggleExercise(${i},this.checked)"><label for="ex${i}"><strong>${e[0]}</strong><br><span class="small">${e[1]}</span></label></div>`).join('');
+ let n=checks.filter(Boolean).length;
+ $('progressText').textContent=n+' de 4 ejercicios completados';
+ $('progressBar').style.width=(n/4*100)+'%';
+}
+function toggleExercise(i,val){checks[i]=val;save('checks',checks);renderRoutine()}
+function resetRoutine(){checks=[false,false,false,false];save('checks',checks);renderRoutine();$('routineMessage').textContent='Rutina reiniciada.'}
+function finishRoutine(){
+ if(!checks.every(Boolean)){ $('routineMessage').textContent='Completa los cuatro ejercicios antes de guardar la sesión.';return}
+ sessions++;minutes+=45;save('sessions',sessions);save('minutes',minutes);
+ checks=[false,false,false,false];save('checks',checks);
+ $('routineMessage').textContent='¡Sesión guardada! Buen trabajo.';
+ renderRoutine();renderAll();
+}
+$('matchForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ matches.unshift({mode:$('mode').value,kills:Number($('matchKills').value),place:Number($('placement').value),points:Number($('matchPoints').value),win:$('win').value==='yes',date:new Date().toLocaleDateString('es-ES')});
+ save('matches',matches);e.target.reset();renderAll();
+});
+$('eventForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ events.push({name:$('eventName').value,date:$('eventDate').value,goal:Number($('eventGoal').value)});
+ save('events',events);e.target.reset();renderAll();
+});
+function renderEvents(){
+ $('eventList').innerHTML=events.length?events.map((ev,i)=>`<div class="card"><div class="tag">OBJETIVO: ${ev.goal} PTS</div><h3>${esc(ev.name)}</h3><p>${esc(ev.date.replace('T',' · '))}</p><button onclick="deleteEvent(${i})">Eliminar</button></div>`).join(''):'<div class="card">Todavía no has añadido torneos.</div>';
+}
+function deleteEvent(i){events.splice(i,1);save('events',events);renderAll()}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderAll(){
+ $('sessions').textContent=sessions;$('minutes').textContent=minutes;
+ $('points').textContent=matches.reduce((a,m)=>a+m.points,0);
+ $('kills').textContent=matches.reduce((a,m)=>a+m.kills,0);
+ $('gamesTotal').textContent=matches.length;
+ $('winsTotal').textContent=matches.filter(m=>m.win).length;
+ $('avgKills').textContent=matches.length?(matches.reduce((a,m)=>a+m.kills,0)/matches.length).toFixed(1):'0';
+ $('history').innerHTML=matches.length?matches.slice(0,20).map(m=>`<div class="item"><div><strong>${esc(m.mode)}</strong><div class="small">${m.date} · Puesto ${m.place} · ${m.kills} eliminaciones · ${m.points} puntos ${m.win?'· Victoria':''}</div></div></div>`).join(''):'Todavía no has registrado partidas.';
+ renderEvents();renderRoutine();
+}
+$('coachForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const plans={
+ aim:['Puntería','Empieza con tracking y seguimiento de objetivos. Después practica disparos a objetivos en movimiento y termina con combates reales.'],
+ edit:['Edición','Calienta con ediciones simples, enlaza varias ediciones sin fallos y termina practicando reinicios y disparos tras editar.'],
+ build:['Construcción','Practica rampas protegidas, giros, colocación de conos y paredes. Termina controlando piezas en situaciones de combate.'],
+ game:['Decisiones','Revisa cuándo rotar, dónde colocarte, qué coberturas usar y cuándo evitar un combate desfavorable.'],
+ fight:['Combates','Practica pre-edits desactivados si te estorban, control de paredes, ángulos seguros y precisión antes de atacar.']
+ };
+ const key=$('weakness').value,mins=Number($('time').value),level=$('level').value;
+ const warm=Math.max(5,Math.round(mins*.2)),focus=Math.round(mins*.5),game=mins-warm-focus;
+ $('advice').innerHTML=`<h2 class="green">Tu plan de ${mins} minutos</h2><div class="item"><label><strong>${warm} min · Calentamiento</strong><br>Movilidad, control del mando y puntería suave.</label></div><div class="item"><label><strong>${focus} min · ${plans[key][0]}</strong><br>${plans[key][1]}</label></div><div class="item"><label><strong>${game} min · Aplicación práctica</strong><br>Juega una situación real acorde a tu nivel ${esc(level.toLowerCase())} y revisa un error para corregirlo.</label></div><p>Consejo: céntrate en ejecutar bien cada ejercicio, no solo en hacerlo rápido. Estas recomendaciones son generadas por reglas, no por una IA conectada.</p>`;
+});
+renderAll();
+</script>
+</body>
+</html>
